@@ -1,5 +1,5 @@
-/.vscode
-/bin
-/obj
-/TestResults
-/Museum.sln
+.vscode/
+bin/
+obj/
+TestResults/
+*.sln
