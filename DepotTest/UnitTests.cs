@@ -24,7 +24,7 @@ public class UnitTests
         FakeWorld fakeworld = new()
         {
             LinesWritten = new()
-        };  
+        };
         Program.World = fakeworld;
 
         // Act

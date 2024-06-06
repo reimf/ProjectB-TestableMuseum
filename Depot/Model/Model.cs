@@ -36,5 +36,5 @@ public class Model<T> where T : Model<T>, IIdentifiable
         else
             items.Add(itemToSave);
         WriteAll(items);
-    }       
+    }
 }

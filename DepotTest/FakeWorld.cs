@@ -15,7 +15,7 @@ public class FakeWorld : IWorld
         get
         {
             if (_now is null)
-                WriteDebugInfoToDebugConsole();                
+                WriteDebugInfoToDebugConsole();
             return _now ?? throw new NullReferenceException();
         }
         set => _now = value;
@@ -31,7 +31,7 @@ public class FakeWorld : IWorld
             WriteDebugInfoToDebugConsole();
         LinesWritten.Add(line);
     }
-    
+
     public string ReadLine()
     {
         if (LinesToRead is null || _linesRead >= LinesToRead.Count)

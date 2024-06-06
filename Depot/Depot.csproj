@@ -10,6 +10,6 @@
   <ItemGroup>
     <Content Include="Data/*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>  
+    </Content>
   </ItemGroup>
 </Project>

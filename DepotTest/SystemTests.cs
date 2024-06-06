@@ -11,9 +11,14 @@ public class SystemTests
         // Arrange
         FakeWorld fakeworld = new()
         {
-            LinesToRead = new() { "1", "7890", "9" },
+            LinesToRead = new()
+            {
+                "1",
+                "7890",
+                "9"
+            },
             LinesWritten = new(),
-            Now = new DateTime(2002, 4, 1),
+            Now = new(2002, 4, 1),
             Files = new()
             {
                 ["Data/Visitors.json"] = "[{\"Id\":1,\"Barcode\":\"7890\"}]"
