@@ -1,13 +1,19 @@
 namespace Depot;
 
-public class Visitor : Model<Visitor>, IBarcodable
+public class Visitor : Model<Visitor>, IIdentifiable
 {
+    public int Id { get; set; }
     public string Barcode { get; set; }
     public DateTime LastLogin { get; set; }
 
     public void LoggedIn()
     {
-        LastLogin = Now;
+        LastLogin = Program.World.Now;
+    }
+
+    public static Visitor WithBarcode(string barcode)
+    {
+        return Load(visitor => visitor.Barcode == barcode);
     }
 
     public override string ToString()

@@ -2,33 +2,39 @@ namespace Depot;
 
 using System.Text.Json;
 
-public class Model<T> where T : IBarcodable
+public class Model<T> where T : Model<T>, IIdentifiable
 {
-    protected DateTime Now { get => Program.World.Now; }
-    private static readonly string FileName = GetFileName();
-    protected static readonly List<T> _items = ReadAll();
-
-    public static T WithBarcode(string barcode)
+    private static string FileName
     {
-        return _items.Find(item => item.Barcode == barcode);
+        get => $"Data/{typeof(T).Name}s.json";
     }
 
-    public static List<T> ReadAll()
+    private static List<T> ReadAll()
     {
         string json = Program.World.ReadAllText(FileName);
         return JsonSerializer.Deserialize<List<T>>(json);
     }
 
-    public static void WriteAll()
+    private static void WriteAll(List<T> items)
     {
-        string json = JsonSerializer.Serialize(_items);
+        string json = JsonSerializer.Serialize(items);
         Program.World.WriteAllText(FileName, json);
     }
 
-    public static string GetFileName()
+    public static T Load(Func<T, bool> predicate)
     {
-        string name = typeof(T).Name;
-        string today = Program.World.Now.ToString("yyyyMMdd");
-        return $"Data/{name}s_{today}.json";
+        return ReadAll().Single(item => predicate(item));
     }
+
+    public void Save()
+    {
+        List<T> items = ReadAll();
+        T itemToSave = this as T;
+        int index = items.FindIndex(item => item.Id == itemToSave.Id);
+        if (index >= 0)
+            items[index] = itemToSave;
+        else
+            items.Add(itemToSave);
+        WriteAll(items);
+    }       
 }

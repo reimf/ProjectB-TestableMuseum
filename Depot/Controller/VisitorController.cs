@@ -13,6 +13,7 @@ public static class VisitorController
         else
         {
             visitor.LoggedIn();
+            visitor.Save();
             VisitorWelcome.Show(visitor);
         }
     }

@@ -10,5 +10,7 @@ public interface IWorld
 
     string ReadAllText(string path);
 
+    bool Exists(string path);
+
     void WriteAllText(string path, string contents);
 }

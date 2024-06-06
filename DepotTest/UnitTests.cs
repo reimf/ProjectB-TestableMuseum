@@ -21,7 +21,10 @@ public class UnitTests
     public void ViewTestVisitorDenied()
     {
         // Arrange
-        FakeWorld fakeworld = new();  
+        FakeWorld fakeworld = new()
+        {
+            LinesWritten = new()
+        };  
         Program.World = fakeworld;
 
         // Act

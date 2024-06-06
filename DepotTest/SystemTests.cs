@@ -11,11 +11,12 @@ public class SystemTests
         // Arrange
         FakeWorld fakeworld = new()
         {
-            LinesToRead = new() { "1", "1234", "9" },
+            LinesToRead = new() { "1", "7890", "9" },
+            LinesWritten = new(),
             Now = new DateTime(2002, 4, 1),
             Files = new()
             {
-                ["Data/Visitors_20020401.json"] = "[{\"Barcode\": \"1234\"}]"
+                ["Data/Visitors.json"] = "[{\"Id\":1,\"Barcode\":\"7890\"}]"
             }	
         };
         Program.World = fakeworld;
@@ -24,14 +25,18 @@ public class SystemTests
         Program.Main();
         fakeworld.WriteDebugInfoToDebugConsole();
 
-        // Assert
-        string expected = "Welkom bezoeker 1234";
+        // Assert 1
+        string expected = "Welkom bezoeker 7890";
         CollectionAssert.Contains(fakeworld.LinesWritten, expected);
 
-        string json = fakeworld.Files["Data/Visitors_20020401.json"];
-        List<Visitor> visitors = JsonSerializer.Deserialize<List<Visitor>>(json);
-        Assert.AreEqual(1, visitors.Count);
-        Visitor visitor = visitors[0];
-        Assert.AreEqual(fakeworld.Now, visitor.LastLogin);
+        // Assert 2a
+        string actualJson = fakeworld.Files["Data/Visitors.json"];
+        string expectedJson = "[{\"Id\":1,\"Barcode\":\"7890\",\"LastLogin\":\"2002-04-01T00:00:00\"}]";
+        Assert.AreEqual(expectedJson, actualJson);
+
+        // Assert 2b
+        Visitor[] visitors = JsonSerializer.Deserialize<Visitor[]>(actualJson);
+        Assert.AreEqual(1, visitors.Length);
+        Assert.AreEqual(fakeworld.Now, visitors[0].LastLogin);
     }
 }

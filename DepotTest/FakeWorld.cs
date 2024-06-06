@@ -15,29 +15,27 @@ public class FakeWorld : IWorld
         get
         {
             if (_now is null)
-            {
                 WriteDebugInfoToDebugConsole();                
-            }
             return _now ?? throw new NullReferenceException();
         }
         set => _now = value;
     }
-    public List<string> LinesWritten { get; } = new();
-    public List<string> LinesToRead { private get; set; } = new();
-    public Dictionary<string, string> Files { get; set; }= new();
+    public List<string> LinesWritten { get; set; } = null;
+    public List<string> LinesToRead { private get; set; } = null;
+    public Dictionary<string, string> Files { get; set; } = null;
     public bool IncludeLinesReadInLinesWritten { get; set; } = false;
 
     public void WriteLine(string line)
     {
+        if (LinesWritten is null)
+            WriteDebugInfoToDebugConsole();
         LinesWritten.Add(line);
     }
     
     public string ReadLine()
     {
-        if (_linesRead >= LinesToRead.Count)
-        {
+        if (LinesToRead is null || _linesRead >= LinesToRead.Count)
             WriteDebugInfoToDebugConsole();
-        }
         string line = LinesToRead.ElementAt(_linesRead);
         _linesRead++;
         if (IncludeLinesReadInLinesWritten)
@@ -47,16 +45,23 @@ public class FakeWorld : IWorld
 
     public string ReadAllText(string path)
     {
-        if (!_previousFileVersions.ContainsKey(path))
-        {
+        if (!Exists(path))
             WriteDebugInfoToDebugConsole();
-        }
         _filesTimesRead[path] = _filesTimesRead.GetValueOrDefault(path, 0) + 1;
         return Files[path];
     }
 
+    public bool Exists(string path)
+    {
+        if (Files is null)
+            WriteDebugInfoToDebugConsole();
+        return Files.ContainsKey(path);
+    }
+
     public void WriteAllText(string path, string content)
     {
+        if (Files is null)
+            WriteDebugInfoToDebugConsole();
         if (!_previousFileVersions.ContainsKey(path))
             _previousFileVersions[path] = new();
         _previousFileVersions[path].Add(Files[path]);

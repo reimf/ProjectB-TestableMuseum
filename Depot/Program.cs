@@ -7,6 +7,5 @@ public static class Program
     public static void Main()
     {
         MenuController.Start();
-        Visitor.WriteAll();
     }
 }
