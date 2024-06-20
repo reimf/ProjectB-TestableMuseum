@@ -5,17 +5,19 @@ using System.Diagnostics;
 public class FakeWorld : IWorld
 {
     private DateTime? _now = null;
+    private int _timeTimesUsed = 0;
     private int _linesRead = 0;
     private readonly Dictionary<string, int> _filesTimesRead = new();
     private readonly Dictionary<string, List<string>> _previousFileVersions = new();
 
-    // You can override these in the code block after the constructor
+    // You can override the following properties in the code block after the constructor
     public DateTime Now
     {
         get
         {
             if (_now is null)
                 WriteDebugInfoToDebugConsole();
+            _timeTimesUsed++;
             return _now ?? throw new NullReferenceException();
         }
         set => _now = value;
@@ -68,58 +70,38 @@ public class FakeWorld : IWorld
         Files[path] = content;
     }
 
-    private void WriteDebugInfoAboutNowToDebugConsole()
-    {
-        Debug.WriteLine($"--- Now: {_now?.ToString("O") ?? "null"}");
-    }
-
-    private void WriteDebugInfoAboutLinesToReadToDebugConsole()
-    {
-        Debug.WriteLine($"--- LinesToRead ({_linesRead}/{LinesToRead.Count} lines read)");
-        Debug.WriteLine(string.Join("\n", LinesToRead));
-    }
-
-    private void WriteDebugInfoAboutIncludeLinesReadInLinesWrittenToDebugConsole()
-    {
-        Debug.WriteLine($"--- IncludeLinesReadInLinesWritten: {IncludeLinesReadInLinesWritten}");
-    }
-
-    private void WriteDebugInfoAboutLinesWrittenToDebugConsole()
-    {
-        Debug.WriteLine($"--- LinesWritten ({LinesWritten.Count} lines)");
-        Debug.WriteLine(string.Join("\n", LinesWritten));
-    }
-
-    private void WriteDebugInfoAboutFilesToDebugConsole()
-    {
-        if (Files.Count == 0)
-        {
-            Debug.WriteLine("--- Files (0 files)");
-            return;
-        }
-        IEnumerable<(int, string, string)> numberedFiles = Files
-            .Select((item, index) => (index, item.Key, item.Value));
-        foreach ((int number, string path, string currentContent) in numberedFiles)
-        {
-            List<string> contents = _previousFileVersions.GetValueOrDefault(path, new());
-            int timesRead = _filesTimesRead.GetValueOrDefault(path, 0);
-            int timesWritten = contents.Count;
-            contents.Add(currentContent);
-            IEnumerable<(int, string)> versionedContents = contents.Select((item, index) => (index, item));
-            foreach ((int version, string content) in versionedContents)
-            {
-                Debug.WriteLine($"--- Files[{path}] (file {number}/{Files.Count}, {timesRead}x read, {timesWritten}x written, version {version}/{timesWritten + 1})");
-                Debug.WriteLine(content);
-            }
-        }
-    }
-
     public void WriteDebugInfoToDebugConsole()
     {
-        WriteDebugInfoAboutNowToDebugConsole();
-        WriteDebugInfoAboutLinesToReadToDebugConsole();
-        WriteDebugInfoAboutIncludeLinesReadInLinesWrittenToDebugConsole();
-        WriteDebugInfoAboutLinesWrittenToDebugConsole();
-        WriteDebugInfoAboutFilesToDebugConsole();
+        Debug.WriteLine($"--- Now ({_timeTimesUsed} times used)");
+        Debug.WriteLine(_now == null ? "null" : _now?.ToString("O"));
+
+        Debug.WriteLine($"--- LinesToRead ({_linesRead}/{LinesToRead.Count} lines read)");
+        Debug.WriteLine(string.Join("\n", LinesToRead));
+
+        Debug.WriteLine($"--- IncludeLinesReadInLinesWritten: {IncludeLinesReadInLinesWritten}");
+
+        Debug.WriteLine($"--- LinesWritten ({LinesWritten.Count} lines)");
+        Debug.WriteLine(string.Join("\n", LinesWritten));
+
+        if (Files.Count == 0)
+            Debug.WriteLine("--- Files (0 files)");
+        else
+        {
+            IEnumerable<(int index, KeyValuePair<string, string> item)> numberedFiles = Files
+                .Select((item, index) => (index, item));
+            foreach ((int number, (string path, string currentContent)) in numberedFiles)
+            {
+                List<string> contents = _previousFileVersions.GetValueOrDefault(path, new());
+                int timesRead = _filesTimesRead.GetValueOrDefault(path, 0);
+                int timesWritten = contents.Count;
+                contents.Add(currentContent);
+                IEnumerable<(int, string)> versionedContents = contents.Select((content, version) => (version, content));
+                foreach ((int version, string content) in versionedContents)
+                {
+                    Debug.WriteLine($"--- Files[{path}] (file {number}/{Files.Count}, {timesRead}x read, {timesWritten}x written, version {version}/{timesWritten + 1})");
+                    Debug.WriteLine(content);
+                }
+            }
+        }
     }
 }
