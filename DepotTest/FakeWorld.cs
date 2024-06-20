@@ -104,4 +104,35 @@ public class FakeWorld : IWorld
             }
         }
     }
+
+    public void WriteWarningsToDebugConsole()
+    {
+        List<string> warnings = new();
+
+        if (_now is not null && _timeTimesUsed == 0)
+            warnings.Add("WARNING: Now is set, but never used");
+        
+        if (LinesToRead is not null && _linesRead < LinesToRead.Count)
+        {
+            string stringNotRead = string.Join(" and ", LinesToRead.Skip(_linesRead).Select(line => $"\"{line}\""));
+            string isOrAre = _linesRead + 1 == LinesToRead.Count ? "is" : "are";
+            warnings.Add($"WARNING: LinesToRead is set, but {stringNotRead} {isOrAre} not read");
+        }
+
+        if (IncludeLinesReadInLinesWritten && _linesRead == 0)
+            warnings.Add("WARNING: IncludeLinesReadInLinesWritten is set to true, but no lines were read");
+
+        if (Files is not null)
+            foreach ((string path, _) in Files)
+            {
+                int timesRead = _filesTimesRead.GetValueOrDefault(path, 0);
+                if (timesRead == 0)
+                    warnings.Add($"WARNING: File {path} is set, but was never read");
+            }
+
+        if (warnings.Count == 0)
+            Debug.WriteLine("No warnings");
+        foreach (string warning in warnings)
+            Debug.WriteLine(warnings);
+    }
 }

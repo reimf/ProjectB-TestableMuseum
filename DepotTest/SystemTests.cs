@@ -29,6 +29,7 @@ public class SystemTests
         // Act
         Program.Main();
         fakeworld.WriteDebugInfoToDebugConsole();
+        fakeworld.WriteWarningsToDebugConsole();
 
         // Assert 1
         string expected = "Welkom bezoeker 7890";
