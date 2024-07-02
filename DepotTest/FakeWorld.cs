@@ -76,12 +76,12 @@ public class FakeWorld : IWorld
         Debug.WriteLine(_now == null ? "null" : _now?.ToString("O"));
 
         Debug.WriteLine($"--- LinesToRead ({_linesRead}/{LinesToRead.Count} lines read)");
-        Debug.WriteLine(string.Join("\n", LinesToRead));
+        Debug.WriteLine(LinesToRead.Glue("/n"));
 
         Debug.WriteLine($"--- IncludeLinesReadInLinesWritten: {IncludeLinesReadInLinesWritten}");
 
         Debug.WriteLine($"--- LinesWritten ({LinesWritten.Count} lines)");
-        Debug.WriteLine(string.Join("\n", LinesWritten));
+        Debug.WriteLine(LinesWritten.Glue("\n"));
 
         if (Files.Count == 0)
             Debug.WriteLine("--- Files (0 files)");
@@ -114,7 +114,7 @@ public class FakeWorld : IWorld
         
         if (LinesToRead is not null && _linesRead < LinesToRead.Count)
         {
-            string stringNotRead = string.Join(" and ", LinesToRead.Skip(_linesRead).Select(line => $"\"{line}\""));
+            string stringNotRead = LinesToRead.Skip(_linesRead).Select(line => $"\"{line}\"").Glue(" and ");
             string isOrAre = _linesRead + 1 == LinesToRead.Count ? "is" : "are";
             warnings.Add($"WARNING: LinesToRead is set, but {stringNotRead} {isOrAre} not read");
         }
@@ -132,7 +132,8 @@ public class FakeWorld : IWorld
 
         if (warnings.Count == 0)
             Debug.WriteLine("No warnings");
-        foreach (string warning in warnings)
-            Debug.WriteLine(warnings);
+        else
+            foreach (string warning in warnings)
+                Debug.WriteLine(warnings);
     }
 }
