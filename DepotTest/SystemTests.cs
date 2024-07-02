@@ -1,7 +1,5 @@
 namespace Depot;
 
-using System.Text.Json;
-
 [TestClass]
 public class SystemTests
 {
@@ -35,14 +33,9 @@ public class SystemTests
         string expected = "Welkom bezoeker 7890";
         CollectionAssert.Contains(fakeworld.LinesWritten, expected);
 
-        // Assert 2a
+        // Assert 2
         string actualJson = fakeworld.Files["Data/Visitors.json"];
         string expectedJson = "[{\"Id\":1,\"Barcode\":\"7890\",\"LastLogin\":\"2002-04-01T00:00:00\"}]";
         Assert.AreEqual(expectedJson, actualJson);
-
-        // Assert 2b
-        Visitor[] visitors = JsonSerializer.Deserialize<Visitor[]>(actualJson);
-        Assert.AreEqual(1, visitors.Length);
-        Assert.AreEqual(fakeworld.Now, visitors[0].LastLogin);
     }
 }
