@@ -13,7 +13,7 @@ public class Visitor : Model<Visitor>, IIdentifiable
 
     public static Visitor WithBarcode(string barcode)
     {
-        return Load(visitor => visitor.Barcode == barcode);
+        return Find(visitor => visitor.Barcode == barcode);
     }
 
     public override string ToString()

@@ -21,7 +21,7 @@ public class Model<T> where T : Model<T>, IIdentifiable
         Program.World.WriteAllText(FileName, json);
     }
 
-    public static T Load(Func<T, bool> predicate)
+    public static T Find(Func<T, bool> predicate)
     {
         return ReadAll().Single(item => predicate(item));
     }
